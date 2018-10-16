@@ -1,0 +1,37 @@
+---
+title: "Data tidying"
+author: "Nelson Crockett"
+date: "October 16, 2018"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, warning=F, message=F}
+library(dplyr)
+library(tidyr)
+```
+
+```{r}
+catch_df <- read.csv(url("https://knb.ecoinformatics.org/knb/d1/mn/v2/object/df35b.302.1", method="libcurl"), stringsAsFactors=FALSE)
+head(catch_df)
+```
+
+selecting columns for analysis
+```{r}
+catch_clean <- catch_df %>% 
+  select(-All, -notesRegCode) %>% 
+  gather(key = "speces", value = "catch", -Region, -Year) %>% 
+  #spread(key = "Region", value = "catch")
+  rename(catch_thousands = catch)
+
+
+tail(catch_clean)
+```
+
+
+```{r}
+
+```
