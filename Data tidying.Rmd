@@ -23,7 +23,7 @@ selecting columns for analysis
 ```{r}
 catch_clean <- catch_df %>% 
   select(-All, -notesRegCode) %>% 
-  gather(key = "speces", value = "catch", -Region, -Year) %>% 
+  gather(key = "species", value = "catch", -Region, -Year) %>% 
   #spread(key = "Region", value = "catch")
   rename(catch_thousands = catch)
 
@@ -31,7 +31,50 @@ catch_clean <- catch_df %>%
 tail(catch_clean)
 ```
 
+Transforming chr to int
 
 ```{r}
+test <- as.numeric(catch_clean$catch_thousands)
+i <- which(is.na(test) == T)
+print(i)
+catch_clean[i, ]
 
 ```
+
+
+fixing typo
+Adding columns
+dropping column
+
+```{r}
+catch_clean_mutated <- catch_clean %>%
+  mutate(catch_thousands = ifelse(catch_thousands == "I" , 1, catch_thousands)) %>% 
+  mutate(catch_thousands = as.numeric(catch_thousands)) %>% 
+  mutate(catch = catch_thousands * 1000) %>% 
+  select(-catch_thousands)
+
+tail(catch_clean_mutated)
+```
+
+spliting using groupby
+
+```{r}
+catch_summarized <- catch_clean_mutated %>% 
+  group_by(Region, Year) %>% 
+  summarize(mean_catch = mean(catch), n_obs = n())
+
+head(catch_summarized)
+```
+
+
+```{r}
+catch_chinook <- catch_clean_mutated %>% 
+  filter(species == "Chinook") %>% 
+  arrange(-catch)
+
+head(catch_chinook)
+```
+
+
+
+
